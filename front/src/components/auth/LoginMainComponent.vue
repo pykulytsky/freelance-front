@@ -5,13 +5,11 @@
         <div class="form">
             <h2>Please input your credentials</h2>
             <div class="center content-inputs">
-            <form @submit="submit">
+                <input :class="{ 'form-group--error': $v.email.$error }" v-model="email" type="email" name="email" class="question" id="email" required autocomplete="off" />
+                <label for="email"><span><unicon name="envelope"></unicon>  Enter email...</span></label>
 
-                <input type="email" name="email" class="question" id="email" required autocomplete="off" />
-                <label for="email"><span>Enter email...</span></label>
-
-                <input type="password" name="password" class="question" id="password" required autocomplete="off" />
-                <label for="password"><span>Enter password...</span></label>
+                <input :class="{ 'form-group--error': $v.password.$error }" v-model="password" type="password" name="password" class="question" id="password" required autocomplete="off" />
+                <label for="password"><span><unicon name="key-skeleton"></unicon>    Enter password...</span></label>
 
                 <vs-checkbox
                     class="remember"
@@ -19,30 +17,80 @@
                     Remember me
                 </vs-checkbox>
 
-                <vs-button
-                    border
-                    class="submit-btn"
-                >
-                    Login
-                </vs-button>
-            </form>
+                <div class="action-section">
+                  <vs-button
+                      @click="login"
+                      border
+                      class="submit-btn"
+                    >
+                      <unicon name="sign-in-alt" fill="limegreen"></unicon>
+                      Login
+                  </vs-button>
+
+                  <router-link
+                    class=""
+                    to="/register"
+                  >
+                    Dont have an account? Register now
+                  </router-link>
+
+                </div>
             </div>
       </div>
     </div>
 </template>
 
 <script>
-export default {
-    data: () => {
-        return {
+import { required, minLength } from 'vuelidate/lib/validators'
 
+export default {
+  data: () => {
+      return {
+        email: '',
+        password: ''
+      }
+  },
+  methods: {
+      login() {
+        if (!this.$v.email.$invalid && !this.$v.password.$invalid) {
+          this.$anonHttp.post(
+            'auth/login/',
+            {
+              email: this.email,
+              password: this.password
+            },
+            {
+              
+            }
+          )
+          .then(response => {
+
+          })
+          .catch(error => {
+            console.log(error)
+          })
         }
+        else {
+          this.$vs.notification({
+            position: 'top-center',
+            title: 'Invalid data',
+            text: `Please enter a valid login data`
+          })
+        }
+      }
+  },
+  validations: {
+    email: {
+      required,
+      minLength: minLength(4)
     },
-    methods: {
-        submit() {
-            console.log("Success")
-        }
+    password: {
+      required,
+      minLength: minLength(6)
     }
+  }
+
+
 }
 </script>
 
@@ -194,5 +242,12 @@ input.question:invalid ~ input[type="submit"], textarea.question:invalid ~ input
 
 .remember {
     margin: 25px;
+}
+
+.action-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  
 }
 </style>

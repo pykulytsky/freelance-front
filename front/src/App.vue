@@ -22,7 +22,9 @@ export default {
   components: {
     navBarComponent: Navbar,
     footerComponent: Footer
-  }
+  },
+
+  
 }
 </script>
 
